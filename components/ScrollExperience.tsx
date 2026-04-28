@@ -1925,6 +1925,6 @@ const NAV_LINKS_FOOTER = [
   { label: 'Opportunities', href: '#opportunities' },
   { label: 'Our Edge', href: '#our-edge' },
   { label: 'Insights', href: '#insights' },
-  { label: 'Investor Guide', href: '#investor-guide' },
+  { label: 'Bali Guide', href: '#investor-guide' },
   { label: 'Contact', href: '#contact' },
 ];
