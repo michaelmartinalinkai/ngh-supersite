@@ -795,21 +795,21 @@ export default function ScrollExperience() {
       category: 'Development',
       image: '/images/content-07.jpg',
       date: 'April 1, 2026',
-      href: '/blog/uluwatu-paradise-development',
+      href: '/insights/uluwatu-paradise-development',
     },
     {
       title: 'Balangan Beach: One of the Most Beautiful Beaches Near Uluwatu Paradise',
       category: 'Lifestyle',
       image: '/images/content-08.jpg',
       date: 'March 29, 2026',
-      href: '/blog/balangan-beach',
+      href: '/insights/balangan-beach',
     },
     {
       title: 'Cafes and Restaurants Near Uluwatu Paradise',
       category: 'Area Guide',
       image: '/images/content-09.jpg',
       date: 'March 23, 2026',
-      href: '/blog/cafes-restaurants-uluwatu',
+      href: '/insights/cafes-restaurants-uluwatu',
     },
   ];
 
