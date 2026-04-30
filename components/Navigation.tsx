@@ -159,7 +159,7 @@ export default function Navigation() {
 
           {/* WhatsApp CTA (desktop) */}
           <a
-            href="https://wa.me/message/nghpropertygroup"
+            href="https://api.whatsapp.com/send/?phone=6285190520175"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden lg:flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg"
@@ -251,7 +251,7 @@ export default function Navigation() {
 
               {/* Mobile WhatsApp CTA */}
               <motion.a
-                href="https://wa.me/message/nghpropertygroup"
+                href="https://api.whatsapp.com/send/?phone=6285190520175"
                 target="_blank"
                 rel="noopener noreferrer"
                 initial={{ opacity: 0, y: 30 }}

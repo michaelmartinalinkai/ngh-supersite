@@ -1734,7 +1734,7 @@ export default function ScrollExperience() {
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <a
-                    href="https://wa.me/message/nghpropertygroup"
+                    href="https://api.whatsapp.com/send/?phone=6285190520175"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-full text-white font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg"
