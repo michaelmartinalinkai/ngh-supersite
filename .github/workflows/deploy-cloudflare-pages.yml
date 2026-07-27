@@ -1,17 +1,17 @@
 name: Deploy to Cloudflare Pages
 
 on:
+  # Production only. Deploy secrets (CLOUDFLARE_API_TOKEN) must not be exposed to
+  # workflow runs on arbitrary branches, so the trigger is scoped to main. Run a
+  # manual deploy with workflow_dispatch if needed.
   push:
-    # push to main -> production; any other branch -> preview at
-    # <branch>.ngh-supersite.pages.dev. Lets us review a change on a real URL
-    # before it lands on the public homepage, instead of only ever deploying prod.
     branches:
-      - "**"
+      - main
   workflow_dispatch:
 
 concurrency:
-  # One deploy per branch at a time so a preview build never cancels a prod build.
-  group: cloudflare-pages-${{ github.ref }}
+  # One production deploy at a time.
+  group: cloudflare-pages-production
   cancel-in-progress: true
 
 jobs:
@@ -51,5 +51,5 @@ jobs:
         run: |
           npx wrangler pages deploy dist \
             --project-name ngh-supersite \
-            --branch "${GITHUB_REF_NAME}" \
+            --branch main \
             --commit-hash "${GITHUB_SHA}"
