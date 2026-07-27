@@ -8,6 +8,7 @@ import AnimText from './AnimText';
 import NGHLogoSVG from './NGHLogoSVG';
 import { useInView } from './useInView';
 import StackedDeckComponent from './StackedDeck';
+import UluwatuShowcaseModal from './UluwatuShowcaseModal';
 /* ════════════════════════════════════════════
    HELPER: FadeIn wrapper for staggered reveals
    ════════════════════════════════════════════ */
@@ -548,6 +549,8 @@ export default function ScrollExperience() {
   const [isMobile, setIsMobile] = useState(false);
   const isMobileRef = useRef(false);
   const rafIdRef = useRef<number | null>(null);
+  // "Site within a site" showcase of the original Uluwatu Paradise website
+  const [showcaseOpen, setShowcaseOpen] = useState(false);
 
   // Detect touch/mobile device
   useEffect(() => {
@@ -1185,14 +1188,20 @@ export default function ScrollExperience() {
               </FadeIn>
             </div>
 
-            {/* Parallax Image */}
+            {/* Parallax Image — clickable: opens the original Uluwatu Paradise site */}
             <FadeIn delay={0.2} direction="right">
-              <div className="relative h-[500px] md:h-[600px] rounded-2xl overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setShowcaseOpen(true)}
+                aria-label="Open the original Uluwatu Paradise website"
+                className="group relative block w-full h-[500px] md:h-[600px] rounded-2xl overflow-hidden text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                style={{ ['--tw-ring-color' as string]: '#C6A96C' }}
+              >
                 <Image
                   src="/images/discover-hero.jpg"
                   alt="Discover NGH Property Group"
                   fill
-                  className="object-cover object-center"
+                  className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
                 <div
@@ -1202,7 +1211,31 @@ export default function ScrollExperience() {
                       'linear-gradient(135deg, rgba(198,169,108,0.1) 0%, transparent 50%)',
                   }}
                 />
-              </div>
+                {/* darken + reveal affordance on hover / always visible on touch */}
+                <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/35 group-focus-visible:bg-black/35" />
+                <div className="absolute inset-x-0 bottom-0 p-6 md:p-7 flex items-end justify-between gap-4">
+                  <div className="translate-y-2 opacity-90 md:opacity-0 md:translate-y-3 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0 group-focus-visible:opacity-100 group-focus-visible:translate-y-0">
+                    <div
+                      className="text-[11px] uppercase tracking-[0.18em] mb-1"
+                      style={{ color: '#C6A96C' }}
+                    >
+                      Where it began
+                    </div>
+                    <div className="text-white text-lg md:text-xl font-light">
+                      View the original Uluwatu Paradise site
+                    </div>
+                  </div>
+                  <span
+                    className="shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-full transition-transform duration-500 group-hover:scale-110"
+                    style={{ backgroundColor: '#C6A96C', color: '#141414' }}
+                    aria-hidden
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M7 17L17 7M17 7H8M17 7v9" />
+                    </svg>
+                  </span>
+                </div>
+              </button>
             </FadeIn>
           </div>
         </div>
@@ -1923,6 +1956,8 @@ export default function ScrollExperience() {
           </div>
         </div>
       </footer>
+
+      <UluwatuShowcaseModal open={showcaseOpen} onClose={() => setShowcaseOpen(false)} />
     </main>
   );
 }
