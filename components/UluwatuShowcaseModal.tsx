@@ -49,10 +49,16 @@ export default function UluwatuShowcaseModal({
     document.body.style.overflow = 'hidden';
     // move focus into the dialog for keyboard users
     const t = window.setTimeout(() => closeRef.current?.focus(), 60);
+    // The framed site is media-heavy, so its full `load` event fires late (all
+    // images + videos). Don't make the visitor stare at a spinner until then —
+    // reveal the frame once it has had time to paint its first content, so they
+    // watch it fill in progressively instead of waiting on a blank screen.
+    const reveal = window.setTimeout(() => setLoaded(true), 1400);
     return () => {
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = prevOverflow;
       window.clearTimeout(t);
+      window.clearTimeout(reveal);
     };
   }, [open, onClose]);
 
@@ -137,18 +143,26 @@ export default function UluwatuShowcaseModal({
             transition={{ duration: reduce ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
             style={{ backgroundColor: CREAM, boxShadow: '0 40px 120px rgba(0,0,0,0.55)' }}
           >
-            {/* loading shimmer until the archived site paints */}
-            {!loaded && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4" style={{ color: '#8A8F83' }}>
+            {/* loading shimmer until the archived site paints; fades out on reveal */}
+            <AnimatePresence>
+              {!loaded && (
                 <motion.div
-                  className="w-10 h-10 rounded-full border-2"
-                  style={{ borderColor: GOLD, borderTopColor: 'transparent' }}
-                  animate={reduce ? {} : { rotate: 360 }}
-                  transition={{ repeat: Infinity, duration: 0.9, ease: 'linear' }}
-                />
-                <span className="text-xs uppercase tracking-[0.2em]">Loading Uluwatu Paradise</span>
-              </div>
-            )}
+                  className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4"
+                  style={{ color: '#8A8F83', backgroundColor: CREAM }}
+                  initial={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reduce ? 0 : 0.4 }}
+                >
+                  <motion.div
+                    className="w-10 h-10 rounded-full border-2"
+                    style={{ borderColor: GOLD, borderTopColor: 'transparent' }}
+                    animate={reduce ? {} : { rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 0.9, ease: 'linear' }}
+                  />
+                  <span className="text-xs uppercase tracking-[0.2em]">Loading Uluwatu Paradise</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <iframe
               key={url}
               src={url}
@@ -157,7 +171,7 @@ export default function UluwatuShowcaseModal({
               onLoad={() => setLoaded(true)}
               sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
               referrerPolicy="no-referrer"
-              loading="lazy"
+              loading="eager"
             />
           </motion.div>
 
