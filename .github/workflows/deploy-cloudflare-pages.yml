@@ -2,12 +2,16 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
+    # push to main -> production; any other branch -> preview at
+    # <branch>.ngh-supersite.pages.dev. Lets us review a change on a real URL
+    # before it lands on the public homepage, instead of only ever deploying prod.
     branches:
-      - main
+      - "**"
   workflow_dispatch:
 
 concurrency:
-  group: cloudflare-pages-production
+  # One deploy per branch at a time so a preview build never cancels a prod build.
+  group: cloudflare-pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -47,5 +51,5 @@ jobs:
         run: |
           npx wrangler pages deploy dist \
             --project-name ngh-supersite \
-            --branch main \
+            --branch "${GITHUB_REF_NAME}" \
             --commit-hash "${GITHUB_SHA}"
