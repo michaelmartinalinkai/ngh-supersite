@@ -8,6 +8,7 @@ import AnimText from './AnimText';
 import NGHLogoSVG from './NGHLogoSVG';
 import { useInView } from './useInView';
 import StackedDeckComponent from './StackedDeck';
+import UluwatuShowcaseModal from './UluwatuShowcaseModal';
 /* ════════════════════════════════════════════
    HELPER: FadeIn wrapper for staggered reveals
    ════════════════════════════════════════════ */
@@ -548,7 +549,8 @@ export default function ScrollExperience() {
   const [isMobile, setIsMobile] = useState(false);
   const isMobileRef = useRef(false);
   const rafIdRef = useRef<number | null>(null);
-  // "Site within a site" showcase of the original Uluwatu Paradise website
+  // "Site within a site" showcase — pop-up that frames the Uluwatu Paradise website
+  const [showcaseOpen, setShowcaseOpen] = useState(false);
 
   // Detect touch/mobile device
   useEffect(() => {
@@ -1186,13 +1188,13 @@ export default function ScrollExperience() {
               </FadeIn>
             </div>
 
-            {/* Parallax Image — links out to the Uluwatu Paradise website */}
+            {/* Parallax Image — opens the "site within a site" showcase pop-up */}
             <FadeIn delay={0.2} direction="right">
-              <a
-                href="https://uluwatuparadise.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Visit the Uluwatu Paradise website"
+              <button
+                type="button"
+                onClick={() => setShowcaseOpen(true)}
+                aria-label="Explore the Uluwatu Paradise website"
+                aria-haspopup="dialog"
                 className="group relative block w-full h-[500px] md:h-[600px] rounded-2xl overflow-hidden text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 style={{ ['--tw-ring-color' as string]: '#C6A96C' }}
               >
@@ -1221,7 +1223,7 @@ export default function ScrollExperience() {
                       Our flagship project
                     </div>
                     <div className="text-white text-lg md:text-xl font-light">
-                      Visit Uluwatu Paradise
+                      Explore Uluwatu Paradise
                     </div>
                   </div>
                   <span
@@ -1234,7 +1236,7 @@ export default function ScrollExperience() {
                     </svg>
                   </span>
                 </div>
-              </a>
+              </button>
             </FadeIn>
           </div>
         </div>
@@ -1955,6 +1957,9 @@ export default function ScrollExperience() {
           </div>
         </div>
       </footer>
+
+      {/* "Site within a site" showcase pop-up */}
+      <UluwatuShowcaseModal open={showcaseOpen} onClose={() => setShowcaseOpen(false)} />
     </main>
   );
 }
