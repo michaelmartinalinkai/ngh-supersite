@@ -3,6 +3,13 @@ import { existsSync, readFileSync } from 'node:fs'
 
 const source = readFileSync(new URL('../app/careers/[slug]/ApplicationForm.tsx', import.meta.url), 'utf8')
 
+assert.match(source, /isRoleOpenForApplications\(role\)/)
+assert.match(source, /disabled=\{!isOpen \|\| status === 'submitting'\}/)
+assert.match(source, /Applications for this role closed on \{role\.closingDate\}\./)
+assert.match(source, /Applications closed/)
+assert.match(source, /Applications for this role are now closed\./)
+assert.match(source, /refreshAvailability/)
+assert.match(source, /60_000/)
 assert.match(source, /Please confirm you have read and understood the Privacy Notice before submitting\./)
 assert.match(source, /I confirm that I have read and understood the\{' '\}/)
 assert.match(source, />\s*Privacy Notice\s*</)
