@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import type { CareerQuestion, CareerRole } from '@/data/careers'
+import { isRoleOpenForApplications } from '@/data/careers'
 
 type UploadKind = 'resume' | 'introVideo'
 type UploadDescriptor = {
@@ -57,10 +58,19 @@ export default function ApplicationForm({ role, questions }: { role: CareerRole;
   const turnstileRef = useRef<HTMLDivElement | null>(null)
   const widgetIdRef = useRef<string | undefined>(undefined)
   const [turnstileToken, setTurnstileToken] = useState('')
+  const [isOpen, setIsOpen] = useState(() => isRoleOpenForApplications(role))
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
   useEffect(() => {
+    const refreshAvailability = () => setIsOpen(isRoleOpenForApplications(role))
+    refreshAvailability()
+    const timer = window.setInterval(refreshAvailability, 60_000)
+    return () => window.clearInterval(timer)
+  }, [role])
+
+  useEffect(() => {
+    if (!isOpen) return
     const scriptId = 'cf-turnstile-script'
     if (!document.getElementById(scriptId)) {
       const script = document.createElement('script')
@@ -112,6 +122,12 @@ export default function ApplicationForm({ role, questions }: { role: CareerRole;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (!isRoleOpenForApplications(role)) {
+      setIsOpen(false)
+      setStatus('error')
+      setMessage('Applications for this role are now closed.')
+      return
+    }
     setStatus('submitting')
     setMessage('Preparing secure upload...')
 
@@ -225,6 +241,12 @@ export default function ApplicationForm({ role, questions }: { role: CareerRole;
         </h2>
       </div>
 
+      {!isOpen ? (
+        <p role="status" className="mb-8 rounded-2xl bg-[#F5F3EE] p-4 text-sm leading-relaxed text-[#4A4A4A]">
+          Applications for this role closed on {role.closingDate}.
+        </p>
+      ) : null}
+
       <fieldset className="mb-8 border-t border-[#C8B9A6]/40 pt-6">
         <legend className="mb-4 text-lg font-medium">Personal information</legend>
         <div className="grid gap-4 md:grid-cols-2">
@@ -282,10 +304,10 @@ export default function ApplicationForm({ role, questions }: { role: CareerRole;
 
       <button
         type="submit"
-        disabled={status === 'submitting'}
+        disabled={!isOpen || status === 'submitting'}
         className="w-full rounded-full bg-[#1F1F1F] px-6 py-4 text-sm font-medium uppercase tracking-[0.18em] text-[#F5F3EE] transition hover:bg-[#C6A96C] hover:text-[#1F1F1F] disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {status === 'submitting' ? 'Submitting...' : 'Submit application'}
+        {!isOpen ? 'Applications closed' : status === 'submitting' ? 'Submitting...' : 'Submit application'}
       </button>
 
       {message ? (

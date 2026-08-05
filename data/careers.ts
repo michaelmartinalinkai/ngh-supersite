@@ -139,8 +139,23 @@ export function getCareerRole(slug: string) {
   return careerRoles.find((role) => role.slug === slug)
 }
 
-export function getOpenCareerRoles() {
-  return careerRoles.filter((role) => role.status === 'open')
+function baliCalendarDate(now = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Makassar',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(now)
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value
+  return `${value('year')}-${value('month')}-${value('day')}`
+}
+
+export function isRoleOpenForApplications(role: CareerRole, now = new Date()) {
+  return role.status === 'open' && role.closingDate >= baliCalendarDate(now)
+}
+
+export function getOpenCareerRoles(now = new Date()) {
+  return careerRoles.filter((role) => isRoleOpenForApplications(role, now))
 }
 
 export function getRoleQuestions(role: CareerRole) {

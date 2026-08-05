@@ -1,5 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import worker from '../src/index'
+import { getCareerRole, isRoleOpenForApplications } from '../../../data/careers'
 
 type StoredObject = { key: string; body: unknown; size: number; bytes?: Uint8Array; contentType?: string }
 
@@ -95,8 +96,40 @@ function testEnv(bucket = new FakeBucket()) {
 }
 
 describe('intake Worker hardening', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-07-01T12:00:00.000Z'))
+  })
+
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
+  })
+
+  it('treats a role as closed from the start of the day after its Bali close date', () => {
+    const role = getCareerRole('operations-planning-manager')
+    expect(role).toBeDefined()
+    expect(isRoleOpenForApplications(role!, new Date('2026-07-20T15:59:59.999Z'))).toBe(true)
+    expect(isRoleOpenForApplications(role!, new Date('2026-07-20T16:00:00.000Z'))).toBe(false)
+  })
+
+  it('rejects upload preparation after the role close date', async () => {
+    vi.setSystemTime(new Date('2026-07-20T16:00:00.000Z'))
+    const response = await worker.fetch(
+      jsonRequest('/uploads/presign', {
+        appId,
+        roleSlug: 'operations-planning-manager',
+        turnstileToken: 'test-token',
+        files: [
+          { kind: 'resume', fileName: 'candidate.pdf', size: 1000, contentType: 'application/pdf' },
+          { kind: 'introVideo', fileName: 'intro.mp4', size: 1000, contentType: 'video/mp4' },
+        ],
+      }),
+      testEnv() as never,
+    )
+
+    expect(response.status).toBe(400)
+    await expect(response.json()).resolves.toEqual({ error: 'This role is not open for applications.' })
   })
 
   it('sets no-referrer on normal JSON responses', async () => {

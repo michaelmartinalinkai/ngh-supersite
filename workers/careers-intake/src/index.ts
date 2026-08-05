@@ -1,4 +1,4 @@
-import { getCareerRole, getRoleQuestions } from '../../../data/careers'
+import { getCareerRole, getRoleQuestions, isRoleOpenForApplications } from '../../../data/careers'
 import { isApplicationExpired, sanitizeFileName, validateUploadMagicBytes, validateUploadRequest, type UploadKind, type UploadRequest } from './security'
 import { presignR2Url } from './presign'
 
@@ -170,7 +170,7 @@ async function handlePresign(request: Request, env: Env) {
   if (!APP_ID_RE.test(appId)) return badRequest('Invalid application ID.', env)
   const roleSlug = requireString(body.roleSlug, 'roleSlug')
   const role = getCareerRole(roleSlug)
-  if (!role || role.status !== 'open') return badRequest('This role is not open for applications.', env)
+  if (!role || !isRoleOpenForApplications(role)) return badRequest('This role is not open for applications.', env)
   const turnstileToken = requireString(body.turnstileToken, 'turnstileToken')
   const turnstile = await verifyTurnstile(turnstileToken, request, env)
   if (!turnstile.ok) return badRequest('Anti-bot verification failed.', env, 403)
@@ -243,7 +243,7 @@ async function validateStoredUpload(env: Env, upload: FinalizeUpload) {
 
 function validateAnswers(roleSlug: string, body: FinalizeBody) {
   const role = getCareerRole(roleSlug)
-  if (!role || role.status !== 'open') return 'This role is not open for applications.'
+  if (!role || !isRoleOpenForApplications(role)) return 'This role is not open for applications.'
   const requiredQuestionIds = new Set(getRoleQuestions(role).filter((question) => question.required).map((question) => question.id))
   const answered = new Set(
     body.answers
@@ -317,7 +317,7 @@ async function handleFinalize(request: Request, env: Env) {
   if (!APP_ID_RE.test(appId)) return badRequest('Invalid application ID.', env)
   const roleSlug = requireString(body.roleSlug, 'roleSlug')
   const role = getCareerRole(roleSlug)
-  if (!role || role.status !== 'open') return badRequest('This role is not open for applications.', env)
+  if (!role || !isRoleOpenForApplications(role)) return badRequest('This role is not open for applications.', env)
   const answerError = validateAnswers(roleSlug, body)
   if (answerError) return badRequest(answerError, env)
 
