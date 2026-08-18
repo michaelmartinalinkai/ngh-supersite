@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { getOpenCareerRoles } from '@/data/careers'
+import { careerRoles, isRoleOpenForApplications } from '@/data/careers'
 
 export const metadata: Metadata = {
   title: 'Careers at NGH Property Group',
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 export default function CareersPage() {
-  const roles = getOpenCareerRoles()
+  const roles = careerRoles
 
   return (
     <main className="min-h-screen bg-[#F5F3EE] text-[#1F1F1F]">
@@ -31,9 +31,9 @@ export default function CareersPage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#C6A96C]">Open roles</p>
+              <p className="text-xs font-medium uppercase tracking-[0.24em] text-[#C6A96C]">Job postings</p>
               <h2 className="mt-3 text-3xl font-light md:text-4xl" style={{ fontFamily: 'var(--font-serif)' }}>
-                Current opportunities
+                Opportunities at NGH
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-relaxed text-[#4A4A4A]">
@@ -47,6 +47,9 @@ export default function CareersPage() {
                 <div className="mb-6 flex flex-wrap items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em]">
                   <span className="rounded-full bg-[#1F1F1F] px-3 py-1 text-[#F5F3EE]">{role.type}</span>
                   <span className="rounded-full border border-[#C8B9A6] px-3 py-1 text-[#6F6A60]">{role.department}</span>
+                  <span className={`rounded-full px-3 py-1 ${isRoleOpenForApplications(role) ? 'bg-[#DCE7D3] text-[#365131]' : 'bg-[#EEEAE2] text-[#6F6A60]'}`}>
+                    {isRoleOpenForApplications(role) ? 'Applications open' : 'Applications closed'}
+                  </span>
                 </div>
                 <h3 className="text-2xl font-light leading-tight" style={{ fontFamily: 'var(--font-serif)' }}>
                   {role.title}
