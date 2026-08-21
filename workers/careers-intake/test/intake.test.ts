@@ -235,7 +235,10 @@ describe('intake Worker hardening', () => {
     expect(bucket.objects.has(`applications/${appId}/metadata.json`)).toBe(false)
   })
 
-  it('rejects finalize when Date of Birth is missing', async () => {
+  it('rejects finalize when a required candidate field (email) is missing', async () => {
+    // Per-role questions are frontend-owned now; the Worker only enforces the
+    // minimal identity fields it needs to contact the applicant. Date of birth
+    // is no longer required (the redesigned form does not collect it).
     const bucket = new FakeBucket()
     bucket.seedJson(`applications/${appId}/session.json`, {
       appId,
@@ -252,7 +255,7 @@ describe('intake Worker hardening', () => {
         appId,
         roleSlug: 'operations-planning-manager',
         consentAccepted: true,
-        candidate: { name: 'Jane Candidate', email: 'jane@example.com', phone: '+62 812', location: 'Bali' },
+        candidate: { name: 'Jane Candidate', phone: '+62 812', location: 'Bali' },
         answers: validAnswers(),
         uploads: [
           { kind: 'resume', key: resumeKey, fileName: 'ignored.pdf', size: 5, contentType: 'application/pdf' },
@@ -264,7 +267,7 @@ describe('intake Worker hardening', () => {
 
     expect(response.status).toBe(400)
     const body = await response.json() as { error: string }
-    expect(body.error).toBe('Candidate date of birth is required.')
+    expect(body.error).toBe('Candidate email is required.')
     expect(bucket.objects.has(`applications/${appId}/metadata.json`)).toBe(false)
   })
 
