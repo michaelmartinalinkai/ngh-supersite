@@ -1457,7 +1457,7 @@ export default function ScrollExperience() {
               <FadeIn delay={0.4}>
                 <div className="mt-12 grid grid-cols-3 gap-4">
                   {[
-                    { name: 'Sergio', role: 'Strategic Partner', image: '/images/sergio.jpg' },
+                    { name: 'Sergio', role: 'Sales Partner', image: '/images/sergio.jpg' },
                     { name: 'Lucy Leanatan', role: 'Marketing Manager', image: '/images/lucy-leanatan.jpeg' },
                     { name: 'Richard Argapara', role: 'Financial Manager', image: '/images/richard-argapara.jpeg' },
                     { name: 'Ibi Imrich', role: 'Sales Advisor', image: '/images/ibi.jpg' },
