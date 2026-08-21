@@ -1463,6 +1463,12 @@ export default function ScrollExperience() {
                     { name: 'Ibi Imrich', role: 'Sales Advisor', image: '/images/ibi.jpg' },
                     { name: 'Steven Tan-a-Kiam', role: 'Investor & Strategic Coach', image: '/images/steven-tan-a-kiam.jpeg' },
                     { name: 'Geraldina Sky', role: 'Sales Advisor', image: '/images/sky.jpg' },
+                    {
+                      name: 'Phuong-Anh Do',
+                      role: 'Legal & Corporate Advisor',
+                      bio: 'Phuong-Anh advises NGH on corporate structuring and compliance, combining a legal background (VU Amsterdam) with international corporate-services experience at TMF Group.',
+                      image: '/assets/images/team/phuong-anh-do.webp',
+                    },
                   ].map((member) => (
                     <div
                       key={member.name}
@@ -1484,6 +1490,7 @@ export default function ScrollExperience() {
                       >
                         <p className="text-xs font-medium text-white leading-tight">{member.name}</p>
                         <p className="text-[10px]" style={{ color: '#C8B9A6' }}>{member.role}</p>
+                        {member.bio && <p className="mt-1 text-[9px] leading-tight text-white/85">{member.bio}</p>}
                       </div>
                     </div>
                   ))}
