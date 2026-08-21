@@ -1285,7 +1285,7 @@ export default function ScrollExperience() {
                     <path d="M9 10v5M15 10v5" />
                   </svg>
                 ),
-                title: 'Dutch Quality',
+                title: 'Dutch Expertise',
                 description:
                   'European construction standards applied to every project. No shortcuts, no compromises.',
               },
