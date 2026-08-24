@@ -802,7 +802,7 @@ export default function ScrollExperience() {
     { name: 'NextGen Home', logo: '/images/partners/nextgen-home.png' },
     { name: 'Supreme', logo: '/images/partners/supreme.png', href: 'https://www.supremerealestate.nl/' },
     { name: 'Coco', logo: '/images/partners/coco.png' },
-    { name: 'Elle', logo: '/images/partners/elle.png' },
+    { name: 'Elle', logo: '/images/partners/elle.png', href: 'https://geonet.properties/elle-resort-and-beach-club' },
     { name: 'Mirah', logo: '/images/partners/mirah.png' },
   ];
 
