@@ -119,17 +119,15 @@ function CountUpStat({
 /* ════════════════════════════════════════════
    HELPER: Marquee strip for partners
    ════════════════════════════════════════════ */
-function MarqueeStrip({ items }: { items: { name: string; logo: string }[] }) {
+function MarqueeStrip({ items }: { items: { name: string; logo: string; href?: string }[] }) {
   const doubled = [...items, ...items];
+  const itemClassName = 'flex-shrink-0 mx-8 md:mx-12 flex items-center justify-center h-16 w-32 md:w-40 opacity-60 hover:opacity-100 transition-opacity duration-300'
 
   return (
     <div className="overflow-hidden py-12" style={{ backgroundColor: '#F5F0E8' }}>
       <div className="flex animate-marquee">
-        {doubled.map((item, i) => (
-          <div
-            key={`${item.name}-${i}`}
-            className="flex-shrink-0 mx-8 md:mx-12 flex items-center justify-center h-16 w-32 md:w-40 opacity-60 hover:opacity-100 transition-opacity duration-300"
-          >
+        {doubled.map((item, i) => {
+          const logo = (
             <Image
               src={item.logo}
               alt={item.name}
@@ -137,8 +135,25 @@ function MarqueeStrip({ items }: { items: { name: string; logo: string }[] }) {
               height={64}
               className="object-contain h-full w-auto"
             />
-          </div>
-        ))}
+          )
+
+          return item.href ? (
+            <a
+              key={`${item.name}-${i}`}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={itemClassName}
+              aria-label={`Visit ${item.name}`}
+            >
+              {logo}
+            </a>
+          ) : (
+            <div key={`${item.name}-${i}`} className={itemClassName}>
+              {logo}
+            </div>
+          )
+        })}
       </div>
 
       <style>{`
@@ -785,7 +800,7 @@ export default function ScrollExperience() {
   const partners = [
     { name: 'Uluwatu Paradise', logo: '/images/partners/uluwatu-paradise.png' },
     { name: 'NextGen Home', logo: '/images/partners/nextgen-home.png' },
-    { name: 'Supreme', logo: '/images/partners/supreme.png' },
+    { name: 'Supreme', logo: '/images/partners/supreme.png', href: 'https://www.supremerealestate.nl/' },
     { name: 'Coco', logo: '/images/partners/coco.png' },
     { name: 'Elle', logo: '/images/partners/elle.png' },
     { name: 'Mirah', logo: '/images/partners/mirah.png' },
