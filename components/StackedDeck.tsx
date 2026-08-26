@@ -61,18 +61,24 @@ function StackedCardItem({
   return (
     <div
       ref={ref}
-      data-ngh-card=""
       style={{
         position: 'sticky',
         top: 80,
         zIndex: index + 1,
-        minHeight: '80vh',
-        borderRadius: 20,
-        overflow: 'hidden',
         marginBottom: '2rem',
-        boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
       }}
     >
+      <div
+        className="group"
+        data-ngh-card=""
+        style={{
+          position: 'relative',
+          minHeight: '80vh',
+          borderRadius: 20,
+          overflow: 'hidden',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
+        }}
+      >
       {/* ── Background image ── */}
       <Image
         src={card.image}
@@ -190,6 +196,16 @@ function StackedCardItem({
             {card.description}
           </p>
 
+          <a
+            href="#contact"
+            className="mt-5 inline-flex w-fit items-center gap-2 rounded-full border border-[#C6A96C] bg-[#C6A96C] px-5 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#1F1F1F] transition-all duration-300 hover:border-[#F5F3EE] hover:bg-[#F5F3EE] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F5F3EE] md:pointer-events-none md:translate-y-2 md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:translate-y-0 md:group-hover:opacity-100 md:group-focus-within:pointer-events-auto md:group-focus-within:translate-y-0 md:group-focus-within:opacity-100"
+          >
+            Enquire now
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+
           {/* Price badge */}
           {card.price && (
             <motion.span
@@ -291,6 +307,7 @@ function StackedCardItem({
             </div>
           )}
         </motion.div>
+      </div>
       </div>
     </div>
   )

@@ -651,8 +651,9 @@ export default function ScrollExperience() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Scroll-driven video — smooth lerp for buttery playback
-  // Uses refs for isMobile to avoid re-mounting on orientation change
+  // Scroll-driven video — smooth lerp for buttery playback.
+  // Keep layout reads inside one animation frame and only listen while this
+  // long pinned section is near the viewport, so unrelated page scrolling stays cheap.
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -661,6 +662,9 @@ export default function ScrollExperience() {
     let animating = false;
     let lastSetProgress = 0; // track last state update for throttling
     let blurSeekCounter = 0; // throttle blur video seeks
+    let scrollFrameId: number | null = null;
+    let scrollable = 0;
+    let observingScroll = false;
 
     const lerp = (start: number, end: number, factor: number) =>
       start + (end - start) * factor;
@@ -713,16 +717,11 @@ export default function ScrollExperience() {
       }
     };
 
-    const handleScroll = () => {
+    const updateTargetFromScroll = () => {
       const container = videoContainerRef.current;
-      if (!container) return;
+      if (!container || scrollable <= 0) return;
 
-      const rect = container.getBoundingClientRect();
-      const containerHeight = container.offsetHeight;
-      const scrollable = containerHeight - window.innerHeight;
-      if (scrollable <= 0) return;
-
-      const scrolled = -rect.top;
+      const scrolled = -container.getBoundingClientRect().top;
       targetProgress = Math.max(0, Math.min(1, scrolled / scrollable));
 
       if (!animating) {
@@ -731,9 +730,54 @@ export default function ScrollExperience() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
+    const updateMeasurements = () => {
+      const container = videoContainerRef.current;
+      scrollable = container ? Math.max(0, container.offsetHeight - window.innerHeight) : 0;
+    };
+
+    const handleScroll = () => {
+      if (scrollFrameId !== null) return;
+      scrollFrameId = requestAnimationFrame(() => {
+        scrollFrameId = null;
+        updateTargetFromScroll();
+      });
+    };
+
+    const startObservingScroll = () => {
+      if (observingScroll) return;
+      observingScroll = true;
+      updateMeasurements();
+      handleScroll();
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    };
+
+    const stopObservingScroll = () => {
+      if (!observingScroll) return;
+      observingScroll = false;
       window.removeEventListener('scroll', handleScroll);
+    };
+
+    const container = videoContainerRef.current;
+    const resizeObserver = new ResizeObserver(() => {
+      updateMeasurements();
+      if (observingScroll) handleScroll();
+    });
+    if (container) resizeObserver.observe(container);
+
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) startObservingScroll();
+        else stopObservingScroll();
+      },
+      { rootMargin: '25% 0px' }
+    );
+    if (container) intersectionObserver.observe(container);
+
+    return () => {
+      stopObservingScroll();
+      intersectionObserver.disconnect();
+      resizeObserver.disconnect();
+      if (scrollFrameId !== null) cancelAnimationFrame(scrollFrameId);
       // Cancel any pending animation frame to prevent ghost loops
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
